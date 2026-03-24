@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- TMB-style diamond -->
+  <rect x="15" y="15" width="70" height="70" rx="8" fill="#E23831" transform="rotate(45 50 50)"/>
+  <!-- White M -->
+  <text x="50" y="68" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="bold" font-size="52" fill="white">M</text>
+</svg>
