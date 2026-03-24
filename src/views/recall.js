@@ -9,7 +9,7 @@ import { showToast } from '../app-shell.js';
 export function renderRecall(container, { query: routeQuery }) {
   let filters = {
     lineId: routeQuery.line || null,
-    boardingStation: routeQuery.from ? decodeURIComponent(routeQuery.from) : (routeQuery.station ? decodeURIComponent(routeQuery.station) : null),
+    goalStation: routeQuery.station ? decodeURIComponent(routeQuery.station) : null,
     direction: routeQuery.dir ? decodeURIComponent(routeQuery.dir) : null,
   };
 
@@ -97,13 +97,13 @@ export function renderRecall(container, { query: routeQuery }) {
         // Station filter
         const stationLabel = document.createElement('div');
         stationLabel.className = 'section-title';
-        stationLabel.textContent = 'Boarding Station';
+        stationLabel.textContent = 'Station';
         controlsEl.appendChild(stationLabel);
 
         const stationInput = document.createElement('input');
         stationInput.type = 'text';
         stationInput.placeholder = 'Filter by station...';
-        stationInput.value = filters.boardingStation || '';
+        stationInput.value = filters.goalStation || '';
         stationInput.style.cssText = `
           width: 100%; padding: 8px 16px; border: 1px solid var(--border-color);
           border-radius: var(--radius-md); background: var(--bg-input); font-size: 15px;
@@ -134,10 +134,10 @@ export function renderRecall(container, { query: routeQuery }) {
 
           stations.forEach(station => {
             const item = document.createElement('div');
-            item.className = `station-item ${filters.boardingStation === station.name ? 'selected' : ''}`;
+            item.className = `station-item ${filters.goalStation === station.name ? 'selected' : ''}`;
             item.textContent = station.name;
             item.addEventListener('click', () => {
-              filters.boardingStation = station.name;
+              filters.goalStation = station.name;
               stationInput.value = station.name;
               stationDropdown.style.display = 'none';
               loadResults();
@@ -149,11 +149,11 @@ export function renderRecall(container, { query: routeQuery }) {
         controlsEl.appendChild(stationInput);
         controlsEl.appendChild(stationDropdown);
       }
-    } else if (filters.boardingStation && !filters.lineId) {
+    } else if (filters.goalStation && !filters.lineId) {
       // Station was set via search (from home page) without a specific line
       const stationLabel = document.createElement('div');
       stationLabel.className = 'section-title';
-      stationLabel.textContent = `Entries for: ${filters.boardingStation}`;
+      stationLabel.textContent = `Entries for: ${filters.goalStation}`;
       controlsEl.appendChild(stationLabel);
     }
 
@@ -176,21 +176,21 @@ export function renderRecall(container, { query: routeQuery }) {
       });
       filterBar.appendChild(chip);
     }
-    if (filters.boardingStation) {
-      const chip = createFilterChip(filters.boardingStation, () => {
-        filters.boardingStation = null;
+    if (filters.goalStation) {
+      const chip = createFilterChip(filters.goalStation, () => {
+        filters.goalStation = null;
         render();
       });
       filterBar.appendChild(chip);
     }
 
-    if (filters.lineId || filters.boardingStation || filters.direction) {
+    if (filters.lineId || filters.goalStation || filters.direction) {
       const clearChip = document.createElement('button');
       clearChip.className = 'filter-chip';
       clearChip.textContent = 'Clear all';
       clearChip.style.color = 'var(--tmb-red)';
       clearChip.addEventListener('click', () => {
-        filters = { lineId: null, boardingStation: null, direction: null };
+        filters = { lineId: null, goalStation: null, direction: null };
         render();
       });
       filterBar.appendChild(clearChip);
@@ -212,7 +212,7 @@ export function renderRecall(container, { query: routeQuery }) {
     if (!resultsEl) return;
 
     // If no filters, show all entries
-    const hasFilters = filters.lineId || filters.boardingStation || filters.direction;
+    const hasFilters = filters.lineId || filters.goalStation || filters.direction;
 
     const subscribeFn = hasFilters ? subscribeFiltered.bind(null, filters) : subscribeEntries;
 
@@ -270,11 +270,17 @@ export function renderRecall(container, { query: routeQuery }) {
       <div class="modal-handle"></div>
       <div style="font-size:20px;font-weight:700;margin-bottom:16px;">
         <span style="color:${getLineColor(entry.lineId)}">${entry.lineId}</span>
-        ${entry.boardingStation} → ${entry.goalStation}
+        ${entry.boardingStation ? `${entry.boardingStation} &rarr; ` : ''}${entry.goalStation}
       </div>
       <div style="font-size:14px;line-height:2;color:var(--text-secondary)">
         <div><strong>Direction:</strong> ${entry.direction}</div>
-        <div><strong>Goal:</strong> ${entry.goalType === 'transfer' ? `Transfer to ${entry.transferLine}` : (entry.exitDescription || 'Exit')}</div>
+        <div><strong>Goal:</strong> ${entry.goalType === 'transfer' ? `Transfer to ${entry.transferLine}` : (() => {
+          let t = 'Exit';
+          if (entry.exitDirection) t += ` (${entry.exitDirection})`;
+          if (entry.singleExit) t += ' · single exit';
+          if (entry.exitDescription) t += ` — ${entry.exitDescription}`;
+          return t;
+        })()}</div>
         <div><strong>Position:</strong> Car ${entry.position?.car || '?'}, Door ${entry.position?.door || '?'} (${entry.position?.side || '?'} side)</div>
         ${entry.notes ? `<div><strong>Notes:</strong> ${entry.notes}</div>` : ''}
         <div><strong>Votes:</strong> ${entry.upvotes || 0}</div>

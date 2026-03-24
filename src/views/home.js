@@ -58,7 +58,7 @@ export function renderHome(container) {
     recent.forEach(entry => {
       const card = createEntryCard(entry, {
         showVoting: false,
-        onClick: () => navigate(`/recall?line=${entry.lineId}&from=${encodeURIComponent(entry.boardingStation)}&dir=${encodeURIComponent(entry.direction)}`)
+        onClick: () => navigate(`/recall?line=${entry.lineId}&station=${encodeURIComponent(entry.goalStation)}&dir=${encodeURIComponent(entry.direction)}`)
       });
       recentEl.appendChild(card);
     });

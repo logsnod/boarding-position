@@ -24,10 +24,12 @@ export async function saveEntry(data) {
   const entry = {
     lineId: data.lineId,
     direction: data.direction,
-    boardingStation: data.boardingStation,
+    boardingStation: '',
     goalStation: data.goalStation,
     goalType: data.goalType,
     transferLine: data.transferLine || null,
+    exitDirection: data.exitDirection || null,
+    singleExit: data.singleExit || false,
     exitDescription: data.exitDescription || '',
     position: {
       car: data.position.car,
@@ -112,12 +114,12 @@ export function subscribeEntries(callback) {
 }
 
 // Query entries by line and optionally station/direction
-export function subscribeFiltered({ lineId, boardingStation, direction }, callback) {
+export function subscribeFiltered({ lineId, goalStation, direction }, callback) {
   if (isFirebaseConfigured()) {
     const db = getDb();
     const constraints = [orderBy('upvotes', 'desc')];
     if (lineId) constraints.unshift(where('lineId', '==', lineId));
-    if (boardingStation) constraints.unshift(where('boardingStation', '==', boardingStation));
+    if (goalStation) constraints.unshift(where('goalStation', '==', goalStation));
     if (direction) constraints.unshift(where('direction', '==', direction));
 
     const q = query(collection(db, ENTRIES_COL), ...constraints);
@@ -129,7 +131,7 @@ export function subscribeFiltered({ lineId, boardingStation, direction }, callba
     loadFromLocalStorage();
     const filtered = localEntries.filter(e => {
       if (lineId && e.lineId !== lineId) return false;
-      if (boardingStation && e.boardingStation !== boardingStation) return false;
+      if (goalStation && e.goalStation !== goalStation) return false;
       if (direction && e.direction !== direction) return false;
       return true;
     }).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
@@ -137,7 +139,7 @@ export function subscribeFiltered({ lineId, boardingStation, direction }, callba
     const wrappedCb = () => {
       const f = localEntries.filter(e => {
         if (lineId && e.lineId !== lineId) return false;
-        if (boardingStation && e.boardingStation !== boardingStation) return false;
+        if (goalStation && e.goalStation !== goalStation) return false;
         if (direction && e.direction !== direction) return false;
         return true;
       }).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));

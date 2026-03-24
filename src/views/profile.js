@@ -110,7 +110,7 @@ export function renderProfile(container) {
       myEntries.forEach(entry => {
         const card = createEntryCard(entry, {
           showVoting: false,
-          onClick: () => navigate(`/recall?line=${entry.lineId}&from=${encodeURIComponent(entry.boardingStation)}&dir=${encodeURIComponent(entry.direction)}`)
+          onClick: () => navigate(`/recall?line=${entry.lineId}&station=${encodeURIComponent(entry.goalStation)}&dir=${encodeURIComponent(entry.direction)}`)
         });
         myEntriesEl.appendChild(card);
       });

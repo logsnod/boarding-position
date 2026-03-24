@@ -540,6 +540,50 @@
   color: var(--tmb-red);
 }
 
+/* Exit direction buttons */
+.exit-dir-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.exit-dir-btn {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 15px;
+  background: var(--bg-card);
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.exit-dir-btn.selected {
+  border-color: var(--tmb-red);
+  background: rgba(226, 56, 49, 0.08);
+  color: var(--tmb-red);
+}
+
+/* Single exit toggle */
+.single-exit-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  margin-bottom: var(--space-md);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.single-exit-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--tmb-red);
+}
+
 /* Notes textarea */
 .notes-input {
   width: 100%;

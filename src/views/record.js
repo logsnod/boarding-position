@@ -1,4 +1,4 @@
-import { LINES, getLineIds, getStationsAfter } from '../data/metro-lines.js';
+import { LINES, getLineIds } from '../data/metro-lines.js';
 import { saveEntry } from '../data/firestore-service.js';
 import { getCurrentUser } from '../firebase.js';
 import { createLineBadge } from '../components/line-badge.js';
@@ -7,7 +7,7 @@ import { createPositionIndicator } from '../components/position-indicator.js';
 import { navigate } from '../router.js';
 import { showToast } from '../app-shell.js';
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 6;
 
 export function renderRecord(container, { params }) {
   const preselectedLine = params[0] || null;
@@ -16,10 +16,11 @@ export function renderRecord(container, { params }) {
     step: preselectedLine ? 2 : 1,
     lineId: preselectedLine,
     direction: null,
-    boardingStation: null,
     goalStation: null,
     goalType: 'transfer',
     transferLine: null,
+    exitDirection: null,
+    singleExit: false,
     exitDescription: '',
     position: { car: null, door: null, side: 'left' },
     notes: '',
@@ -44,11 +45,10 @@ export function renderRecord(container, { params }) {
     switch (state.step) {
       case 1: renderLineStep(stepEl); break;
       case 2: renderDirectionStep(stepEl); break;
-      case 3: renderBoardingStationStep(stepEl); break;
-      case 4: renderGoalStationStep(stepEl); break;
-      case 5: renderGoalTypeStep(stepEl); break;
-      case 6: renderPositionStep(stepEl); break;
-      case 7: renderNotesStep(stepEl); break;
+      case 3: renderGoalStationStep(stepEl); break;
+      case 4: renderGoalTypeStep(stepEl); break;
+      case 5: renderPositionStep(stepEl); break;
+      case 6: renderNotesStep(stepEl); break;
     }
 
     container.appendChild(stepEl);
@@ -69,7 +69,6 @@ export function renderRecord(container, { params }) {
           state.step = 2;
           // Reset downstream selections
           state.direction = null;
-          state.boardingStation = null;
           state.goalStation = null;
           render();
         }
@@ -98,7 +97,6 @@ export function renderRecord(container, { params }) {
       `;
       btn.addEventListener('click', () => {
         state.direction = terminal;
-        state.boardingStation = null;
         state.goalStation = null;
         state.step = 3;
         render();
@@ -109,47 +107,14 @@ export function renderRecord(container, { params }) {
     addNavButtons(el, { back: true, backStep: 1 });
   }
 
-  function renderBoardingStationStep(el) {
-    el.innerHTML = `
-      <div class="wizard-title">Where are you boarding?</div>
-      <div class="wizard-subtitle">Select the station where you'll get on the train</div>
-    `;
-
-    const stationSelect = createStationSelect(state.lineId, {
-      direction: state.direction,
-      onSelect: (station) => {
-        state.boardingStation = station.name;
-      }
-    });
-    el.appendChild(stationSelect);
-
-    addNavButtons(el, {
-      back: true,
-      backStep: 2,
-      next: true,
-      nextLabel: 'Next',
-      onNext: () => {
-        if (!state.boardingStation) {
-          showToast('Please select a station');
-          return false;
-        }
-        state.step = 4;
-        render();
-        return true;
-      }
-    });
-  }
-
   function renderGoalStationStep(el) {
     el.innerHTML = `
       <div class="wizard-title">Where are you going?</div>
       <div class="wizard-subtitle">Select your destination station on ${state.lineId}</div>
     `;
 
-    const stationsAfter = getStationsAfter(state.lineId, state.boardingStation, state.direction);
     const stationSelect = createStationSelect(state.lineId, {
       direction: state.direction,
-      exclude: [state.boardingStation],
       onSelect: (station) => {
         state.goalStation = station.name;
         // Pre-check transfers
@@ -163,7 +128,7 @@ export function renderRecord(container, { params }) {
 
     addNavButtons(el, {
       back: true,
-      backStep: 3,
+      backStep: 2,
       next: true,
       nextLabel: 'Next',
       onNext: () => {
@@ -171,7 +136,7 @@ export function renderRecord(container, { params }) {
           showToast('Please select a destination');
           return false;
         }
-        state.step = 5;
+        state.step = 4;
         render();
         return true;
       }
@@ -265,25 +230,58 @@ export function renderRecord(container, { params }) {
         el.appendChild(select);
       }
     } else {
-      // Exit description
-      const exitLabel = document.createElement('div');
-      exitLabel.className = 'wizard-subtitle mt-md';
-      exitLabel.textContent = 'Describe your desired exit (optional):';
-      el.appendChild(exitLabel);
+      // Exit direction options
+      const dirLabel = document.createElement('div');
+      dirLabel.className = 'wizard-subtitle mt-md';
+      dirLabel.textContent = 'Which direction do you want to exit? (optional)';
+      el.appendChild(dirLabel);
 
-      const exitInput = document.createElement('textarea');
-      exitInput.className = 'notes-input';
-      exitInput.placeholder = 'e.g., "South exit toward Plaça Catalunya" or "Escalator to street level"';
-      exitInput.value = state.exitDescription;
-      exitInput.addEventListener('input', () => {
-        state.exitDescription = exitInput.value;
+      const dirGrid = document.createElement('div');
+      dirGrid.className = 'exit-dir-grid';
+      ['North', 'South', 'East', 'West'].forEach(dir => {
+        const btn = document.createElement('button');
+        btn.className = `exit-dir-btn ${state.exitDirection === dir.toLowerCase() ? 'selected' : ''}`;
+        btn.textContent = dir;
+        btn.addEventListener('click', () => {
+          if (state.exitDirection === dir.toLowerCase()) {
+            state.exitDirection = null;
+          } else {
+            state.exitDirection = dir.toLowerCase();
+          }
+          render();
+        });
+        dirGrid.appendChild(btn);
       });
-      el.appendChild(exitInput);
+      el.appendChild(dirGrid);
+
+      // Single exit checkbox
+      const singleExitLabel = document.createElement('label');
+      singleExitLabel.className = 'single-exit-toggle';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = state.singleExit;
+      checkbox.addEventListener('change', () => {
+        state.singleExit = checkbox.checked;
+      });
+      singleExitLabel.appendChild(checkbox);
+      singleExitLabel.appendChild(document.createTextNode('Single exit only'));
+      el.appendChild(singleExitLabel);
+
+      // Optional details
+      const detailsInput = document.createElement('input');
+      detailsInput.type = 'text';
+      detailsInput.className = 'notes-input';
+      detailsInput.placeholder = 'Additional details (optional), e.g., "near the escalator"';
+      detailsInput.value = state.exitDescription;
+      detailsInput.addEventListener('input', () => {
+        state.exitDescription = detailsInput.value;
+      });
+      el.appendChild(detailsInput);
     }
 
     addNavButtons(el, {
       back: true,
-      backStep: 4,
+      backStep: 3,
       next: true,
       nextLabel: 'Next',
       onNext: () => {
@@ -291,7 +289,7 @@ export function renderRecord(container, { params }) {
           showToast('Please select a transfer line');
           return false;
         }
-        state.step = 6;
+        state.step = 5;
         render();
         return true;
       }
@@ -314,7 +312,7 @@ export function renderRecord(container, { params }) {
 
     addNavButtons(el, {
       back: true,
-      backStep: 5,
+      backStep: 4,
       next: true,
       nextLabel: 'Next',
       onNext: () => {
@@ -322,7 +320,7 @@ export function renderRecord(container, { params }) {
           showToast('Please tap a door on the train');
           return false;
         }
-        state.step = 7;
+        state.step = 6;
         render();
         return true;
       }
@@ -345,6 +343,12 @@ export function renderRecord(container, { params }) {
     });
     el.appendChild(notesInput);
 
+    // Build exit info for summary
+    let exitInfo = `Exit at <strong>${state.goalStation}</strong>`;
+    if (state.exitDirection) exitInfo += ` (${state.exitDirection})`;
+    if (state.singleExit) exitInfo += ' &middot; single exit';
+    if (state.exitDescription) exitInfo += ` &mdash; ${state.exitDescription}`;
+
     // Summary card
     const summary = document.createElement('div');
     summary.className = 'card mt-lg';
@@ -353,10 +357,9 @@ export function renderRecord(container, { params }) {
       <div style="font-size:14px;line-height:1.8">
         <strong style="color:${LINES[state.lineId]?.color}">${state.lineId}</strong>
         direction <strong>${state.direction}</strong><br>
-        Board at <strong>${state.boardingStation}</strong><br>
         ${state.goalType === 'transfer'
           ? `Transfer to <strong>${state.transferLine}</strong> at <strong>${state.goalStation}</strong>`
-          : `Exit at <strong>${state.goalStation}</strong>${state.exitDescription ? ` (${state.exitDescription})` : ''}`
+          : exitInfo
         }<br>
         Stand at <strong>Car ${state.position.car}, Door ${state.position.door}</strong> (${state.position.side} side)
       </div>
@@ -365,7 +368,7 @@ export function renderRecord(container, { params }) {
 
     addNavButtons(el, {
       back: true,
-      backStep: 6,
+      backStep: 5,
       next: true,
       nextLabel: 'Save Entry',
       onNext: async () => {

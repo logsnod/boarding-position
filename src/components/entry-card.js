@@ -20,7 +20,7 @@ export function createEntryCard(entry, { showVoting = true, onClick, userVotes =
   route.className = 'entry-route';
   route.innerHTML = `
     <span style="color:${lineColor};font-weight:800">${entry.lineId}</span>
-    ${entry.boardingStation} → ${entry.goalStation}
+    ${entry.boardingStation ? `${entry.boardingStation} &rarr; ` : ''}${entry.goalStation}
   `;
   info.appendChild(route);
 
@@ -36,7 +36,11 @@ export function createEntryCard(entry, { showVoting = true, onClick, userVotes =
   if (entry.goalType === 'transfer') {
     goalDetail.innerHTML = `Transfer to <strong>${entry.transferLine}</strong>`;
   } else {
-    goalDetail.textContent = entry.exitDescription || 'Exit';
+    let exitText = 'Exit';
+    if (entry.exitDirection) exitText += ` (${entry.exitDirection})`;
+    if (entry.singleExit) exitText += ' · single exit';
+    if (entry.exitDescription) exitText += ` — ${entry.exitDescription}`;
+    goalDetail.textContent = exitText;
   }
   info.appendChild(goalDetail);
 
