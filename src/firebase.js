@@ -5,12 +5,12 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signO
 // Firebase config — replace with your own project config
 // To set up: https://console.firebase.google.com
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCuAHCKWbGgCZSnc6yuuJV9m2oESOmTHWw",
+  authDomain: "boarding-position.firebaseapp.com",
+  projectId: "boarding-position",
+  storageBucket: "boarding-position.firebasestorage.app",
+  messagingSenderId: "821606578935",
+  appId: "1:821606578935:web:4e29952ee70b99e87671f2"
 };
 
 let app;
