@@ -483,8 +483,6 @@
 
 .train-svg {
   width: 100%;
-  max-width: 380px;
-  margin: 0 auto;
   display: block;
 }
 
@@ -564,6 +562,7 @@
   display: flex;
   gap: var(--space-sm);
   margin-top: var(--space-lg);
+  margin-bottom: var(--space-xl, 32px);
 }
 
 .wizard-nav .btn {

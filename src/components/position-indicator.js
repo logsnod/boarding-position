@@ -22,10 +22,10 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
 
     // SVG train
     const svgNS = 'http://www.w3.org/2000/svg';
-    const carWidth = 60;
-    const carGap = 6;
-    const doorHeight = 10;
-    const carHeight = 40;
+    const carWidth = 100;
+    const carGap = 8;
+    const doorHeight = 18;
+    const carHeight = 56;
     const totalWidth = NUM_CARS * carWidth + (NUM_CARS - 1) * carGap + 20;
     const svgHeight = carHeight + doorHeight * 2 + 30;
 
@@ -52,7 +52,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
     platLabel.setAttribute('x', String(totalWidth / 2));
     platLabel.setAttribute('y', String(platformY + (selected.side === 'left' ? -1 : 14)));
     platLabel.setAttribute('text-anchor', 'middle');
-    platLabel.setAttribute('font-size', '7');
+    platLabel.setAttribute('font-size', '9');
     platLabel.setAttribute('fill', 'currentColor');
     platLabel.setAttribute('opacity', '0.5');
     platLabel.textContent = 'PLATFORM';
@@ -69,7 +69,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
       rect.setAttribute('y', String(trainY));
       rect.setAttribute('width', String(carWidth));
       rect.setAttribute('height', String(carHeight));
-      rect.setAttribute('rx', '4');
+      rect.setAttribute('rx', '6');
       rect.setAttribute('fill', 'var(--bg-card)');
       rect.setAttribute('stroke', 'var(--border-color)');
       rect.setAttribute('stroke-width', '1.5');
@@ -80,7 +80,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
       carText.setAttribute('x', String(x + carWidth / 2));
       carText.setAttribute('y', String(trainY + carHeight / 2 + 4));
       carText.setAttribute('text-anchor', 'middle');
-      carText.setAttribute('font-size', '10');
+      carText.setAttribute('font-size', '13');
       carText.setAttribute('font-weight', 'bold');
       carText.setAttribute('fill', 'var(--text-tertiary)');
       carText.textContent = `Car ${car + 1}`;
@@ -88,7 +88,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
 
       // Doors
       for (let door = 0; door < DOORS_PER_CAR; door++) {
-        const doorWidth = 8;
+        const doorWidth = 16;
         const doorSpacing = carWidth / (DOORS_PER_CAR + 1);
         const doorX = x + doorSpacing * (door + 1) - doorWidth / 2;
 
@@ -136,7 +136,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
           label.setAttribute('x', String(doorX + doorWidth / 2));
           label.setAttribute('y', String(labelY));
           label.setAttribute('text-anchor', 'middle');
-          label.setAttribute('font-size', '6');
+          label.setAttribute('font-size', '9');
           label.setAttribute('font-weight', 'bold');
           label.setAttribute('fill', lineColor);
           label.textContent = `D${doorNum}`;
