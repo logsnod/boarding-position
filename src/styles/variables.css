@@ -1,0 +1,64 @@
+:root {
+  /* TMB Brand */
+  --tmb-red: #E23831;
+  --tmb-red-dark: #B82E28;
+  --tmb-dark: #1a1a2e;
+  --tmb-white: #FFFFFF;
+
+  /* Metro Line Colors */
+  --line-L1: #E23831;
+  --line-L2: #9B2791;
+  --line-L3: #3D9B35;
+  --line-L4: #FFBF00;
+  --line-L5: #007BC2;
+  --line-L9N: #F68B1F;
+  --line-L9S: #F68B1F;
+  --line-L10N: #71C5E8;
+  --line-L10S: #71C5E8;
+  --line-L11: #B5CC18;
+
+  /* Typography */
+  --font-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Light theme (default) */
+  --bg-primary: #F5F5F7;
+  --bg-card: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --border-color: #E5E7EB;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Safe areas for notch phones */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #0f0f1a;
+    --bg-card: #1a1a2e;
+    --bg-input: #252540;
+    --text-primary: #F5F5F7;
+    --text-secondary: #9CA3AF;
+    --text-tertiary: #6B7280;
+    --border-color: #2d2d4a;
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "boarding-position",
+  "version": "1.0.0",
+  "description": "Barcelona Metro Boarding Position Guide - know where to stand on the platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:44423/git/logsnod/boarding-position"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.2.0"
+  },
+  "dependencies": {
+    "firebase": "^12.11.0"
+  }
+}
