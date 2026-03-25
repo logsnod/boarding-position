@@ -33,8 +33,8 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
     svg.setAttribute('viewBox', `0 0 ${totalWidth} ${svgHeight}`);
     svg.setAttribute('class', 'train-svg');
 
-    const platformY = selected.side === 'left' ? 2 : carHeight + doorHeight * 2 + 10;
-    const platformOtherY = selected.side === 'left' ? carHeight + doorHeight * 2 + 10 : 2;
+    const platformY = selected.side === 'right' ? 2 : carHeight + doorHeight * 2 + 10;
+    const platformOtherY = selected.side === 'right' ? carHeight + doorHeight * 2 + 10 : 2;
 
     // Platform indicator (active side)
     const platform = document.createElementNS(svgNS, 'rect');
@@ -50,7 +50,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
     // Platform label
     const platLabel = document.createElementNS(svgNS, 'text');
     platLabel.setAttribute('x', String(totalWidth / 2));
-    platLabel.setAttribute('y', String(platformY + (selected.side === 'left' ? -1 : 14)));
+    platLabel.setAttribute('y', String(platformY + (selected.side === 'right' ? -1 : 14)));
     platLabel.setAttribute('text-anchor', 'middle');
     platLabel.setAttribute('font-size', '9');
     platLabel.setAttribute('fill', 'currentColor');
@@ -96,7 +96,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
         const isSelected = selected.car === car + 1 && selected.door === door + 1;
 
         const doorRect = document.createElementNS(svgNS, 'rect');
-        const doorSideY = selected.side === 'left' ? trainY - doorHeight + 1 : trainY + carHeight - 1;
+        const doorSideY = selected.side === 'right' ? trainY - doorHeight + 1 : trainY + carHeight - 1;
         doorRect.setAttribute('x', String(doorX));
         doorRect.setAttribute('y', String(doorSideY));
         doorRect.setAttribute('width', String(doorWidth));
@@ -132,7 +132,7 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
         // Door label for selected
         if (isSelected) {
           const label = document.createElementNS(svgNS, 'text');
-          const labelY = selected.side === 'left' ? doorSideY - 3 : doorSideY + doorHeight + 8;
+          const labelY = selected.side === 'right' ? doorSideY - 3 : doorSideY + doorHeight + 8;
           label.setAttribute('x', String(doorX + doorWidth / 2));
           label.setAttribute('y', String(labelY));
           label.setAttribute('text-anchor', 'middle');
