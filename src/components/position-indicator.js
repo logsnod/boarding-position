@@ -33,6 +33,9 @@ export function createPositionIndicator(lineId, { onSelect, initialPosition } = 
     svg.setAttribute('viewBox', `0 0 ${totalWidth} ${svgHeight}`);
     svg.setAttribute('class', 'train-svg');
 
+    // Top-down view: front of train is on the left of the diagram.
+    // "Left side" (from passenger POV facing front) = bottom of diagram.
+    // "Right side" = top of diagram.
     const platformY = selected.side === 'right' ? 2 : carHeight + doorHeight * 2 + 10;
     const platformOtherY = selected.side === 'right' ? carHeight + doorHeight * 2 + 10 : 2;
 
